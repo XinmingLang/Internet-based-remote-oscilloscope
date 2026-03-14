@@ -5,11 +5,10 @@ import itertools
 import pandas as pd
 from PySide6.QtWidgets import QApplication, QMainWindow
 from matplotlib import animation
+from sympy.plotting.intervalmath import interval
 
 # 1. 导入转换好的 UI 模块
 from .pc_ui import Ui_MainWindow  # 假设你的 UI 是 MainWindow 类型
-from .mplwidget import MplWidget  # 导入自定义控件
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -52,8 +51,10 @@ class MainWindow(QMainWindow):
         self.line.set_data(self.df['Time'], self.df['Value'])
 
         # 动态移动 X 轴
-        x_min = max(0, frame - 100)
-        x_max = max(100,frame)
+        window_width = 100
+        x_min = max(0, frame - window_width)
+        x_max = x_min + window_width
+        self.plot_widget.ax.set_autoscalex_on(False)
         self.plot_widget.ax.set_xlim(x_min, x_max)
 
         # 返回值用于 blit 优化

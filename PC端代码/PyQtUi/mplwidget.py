@@ -37,7 +37,7 @@ class MplWidget(QWidget):
             update_func,
             frames=itertools.count(0),
             interval=interval,
-            blit=True,
+            #blit=True,
             cache_frame_data=False,
         )
         # 初始状态如果是暂停，则立即暂停
