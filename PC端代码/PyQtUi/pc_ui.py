@@ -16,7 +16,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMenuBar, QPushButton,
-    QSizePolicy, QStatusBar, QWidget)
+    QSizePolicy, QStatusBar, QWidget,QMessageBox)
 from PySide6.QtWidgets import QLabel,QLineEdit
 
 from .mplwidget import MplWidget
@@ -89,13 +89,16 @@ class Ui_MainWindow(object):
         ip_port = re.split(':',self.lineEdit.text())
         self.lineEdit.clear()
         if len(ip_port) != 2:
+            QMessageBox.critical(None, "Error", "Invalid input format. Please enter in 'IP:PORT' format.")
             print("Invalid input format. Please enter in 'IP:PORT' format.")
             return
         ip, port = ip_port
         if not re.match(r"^\d{1,3}(\.\d{1,3}){3}$", ip):
+            QMessageBox.critical(None, "Error", "Invalid IP address format. Please enter a valid IP.")
             print("Invalid IP address format. Please enter a valid IP.")
             return
         if not port.isdigit() or not (0 < int(port) < 65536):
+            QMessageBox.critical(None, "Error", "Invalid port number. Please enter a number between 1 and 65535.")
             print("Invalid port number. Please enter a number between 1 and 65535.")
             return
         print("Connecting to server at IP:PORT @", ip+':'+port)
