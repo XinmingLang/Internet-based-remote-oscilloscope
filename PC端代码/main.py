@@ -1,7 +1,4 @@
-import gui_module
-
-def main():
-    gui_module.run_app()
+from PyQtUi import main,mplwidget,pc_ui
 
 if __name__ == "__main__":
-    main()
+    main.start()
