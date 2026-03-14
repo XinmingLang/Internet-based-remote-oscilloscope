@@ -22,6 +22,7 @@ from PySide6.QtWidgets import QLabel,QLineEdit
 from .mplwidget import MplWidget
 import sys,re
 from pyreciever import reciever
+import threading
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -65,7 +66,8 @@ class Ui_MainWindow(object):
         self.pushButton_3.clicked.connect(self.widget.toggle_pause)
         self.pushButton_4.clicked.connect(self.connect_server)
 
-
+        
+        self.reciever = reciever.reciever()
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
@@ -103,8 +105,8 @@ class Ui_MainWindow(object):
             return
         print("Connecting to server at IP:PORT @", ip+':'+port)
         url = "http://"+ip+':'+port+"/value"
-        self.reciever = reciever.reciever()
-        self.reciever.recievefromurl(url)
+        thread = threading.Thread(target=self.reciever.recievefromurl, args=(url,), daemon=True)
+        thread.start()
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

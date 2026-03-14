@@ -11,7 +11,7 @@ class reciever(QObject):
     def recievefromurl(self,url):
         while True:
             try:
-                r = requests.get(url,timeout = 1)
+                r = requests.get(url,timeout = 5)
                 data = r.json()
                 print("AIN0 = ",data["ain0"])
                 self.data_received.emit(float(data["ain0"]))  # 发射信号，传递数据
@@ -21,9 +21,9 @@ class reciever(QObject):
                 return
             if not self.connected:
                 self.connected = True
-                QMessageBox.information(None, "Success", "Successfully connected to server.")
+                #QMessageBox.information(None, "Success", "Successfully connected to server.")
                 print("Successfully connected to server.")
-            time.sleep(0.2)
+            time.sleep(0.1)
 
 '''
 if __name__ == "__main__":
