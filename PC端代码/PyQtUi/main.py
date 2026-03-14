@@ -6,6 +6,7 @@ import pandas as pd
 from PySide6.QtWidgets import QApplication, QMainWindow
 from matplotlib import animation
 from sympy.plotting.intervalmath import interval
+from pyreciever import reciever
 
 # 1. 导入转换好的 UI 模块
 from .pc_ui import Ui_MainWindow  # 假设你的 UI 是 MainWindow 类型
@@ -13,6 +14,10 @@ from .pc_ui import Ui_MainWindow  # 假设你的 UI 是 MainWindow 类型
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.receivers = reciever.reciever()
+        self.receivers.data_received.connect(self.handle_data)
+        self.values = []
+        self.ani_started = False
 
         # --- 2. 设置 UI ---
         # 这里直接调用 setupUi
@@ -24,22 +29,33 @@ class MainWindow(QMainWindow):
         self.plot_widget = self.ui.widget
 
         # --- 4. 初始化数据 ---
-        self.df = pd.DataFrame({'Time': [0], 'Value': [0]})
+        self.df = pd.DataFrame({'Frame': [0], 'Value': [0]})
 
         # --- 5. 在控件上初始化图形 ---
         self.plot_widget.ax.clear()
         self.line, = self.plot_widget.ax.plot([], [])
         self.plot_widget.ax.set_xlim(0, 100)
         self.plot_widget.ax.set_ylim(-1, 1)
-        self.plot_widget.ax.set_xlabel('Time')
+        self.plot_widget.ax.set_xlabel('Frame')
         self.plot_widget.ax.set_ylabel('Value')
 
-        # --- 6. 启动动画 ---
-        self.plot_widget.start_animation(self.update,interval=30)
+        
+        
 
-    def update(self, frame):
+    def handle_data(self, value):
+        self.values.append(value)
+        # --- 6. 启动动画 ---
+        if not self.ani_started:
+            self.plot_widget.start_animation(self.update,interval=30)
+            self.ani_started = True
+
+    def update(self,frame):
         # --- 模拟数据 ---
-        new_value = math.sin(frame / 10)
+        if len(self.values) > 0:
+            new_value = self.values[0]
+            self.values.pop(0)
+        else:
+            new_value = 0
 
         # --- 更新数据 ---
         self.df.loc[len(self.df)] = [frame, new_value]
@@ -48,7 +64,7 @@ class MainWindow(QMainWindow):
             self.df.reset_index(drop=True, inplace=True)
 
         # --- 更新图形 ---
-        self.line.set_data(self.df['Time'], self.df['Value'])
+        self.line.set_data(self.df['Frame'], self.df['Value'])
 
         # 动态移动 X 轴
         window_width = 100
