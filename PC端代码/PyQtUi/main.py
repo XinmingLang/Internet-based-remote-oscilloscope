@@ -37,11 +37,18 @@ class MainWindow(QMainWindow):
         self.line, = self.plot_widget.ax.plot([], [])
         self.plot_widget.ax.set_xlim(0, 100)
         self.plot_widget.ax.set_ylim(-1, 1)
-        self.plot_widget.ax.set_xlabel('Frame')
+        self.plot_widget.ax.set_xlabel('Frame(30ms per frame)')
         self.plot_widget.ax.set_ylabel('Value')
         self.plot_widget.start_animation(self.update,interval=30)
 
-        
+    def flush_anime(self,ylim,ms_per_frame):
+        self.plot_widget.ax.clear()
+        self.line, = self.plot_widget.ax.plot([], [])
+        self.plot_widget.ax.set_xlim(0, 100)
+        self.plot_widget.ax.set_ylim(0-ylim, ylim)
+        self.plot_widget.ax.set_xlabel('Frame({ms_per_frame} ms per frame)'.format(ms_per_frame=ms_per_frame))
+        self.plot_widget.ax.set_ylabel('Value')
+        self.plot_widget.start_animation(self.update,interval=ms_per_frame)    
         
 
     def handle_data(self, value):
